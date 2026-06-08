@@ -1,6 +1,6 @@
 # GenAR Learn
 
-GenAR Learn is a web-first prototype for an AI-powered augmented reality learning assistant. It turns the report findings into a practical app concept: short AR learning sessions, generative AI tutoring, accessibility controls, quiz feedback, and progress metrics.
+GenAR Learn is an app based on generative AI and augmented reality. This web-first prototype turns the report findings into a practical app concept: short AR learning sessions, generative AI tutoring, accessibility controls, quiz feedback, and progress metrics.
 
 ## Why This App
 
