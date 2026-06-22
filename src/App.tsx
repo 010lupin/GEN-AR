@@ -182,6 +182,7 @@ function App() {
   const [isCarouselPlaying, setIsCarouselPlaying] = useState(true)
   const [activeStep, setActiveStep] = useState(0)
   const [answers, setAnswers] = useState<Record<number, number>>({})
+  const [isHeartPreviewOpen, setIsHeartPreviewOpen] = useState(false)
 
   const selectedUseCase = useCases[activeSlide]
   const completedSteps = activeStep + 1
@@ -190,6 +191,7 @@ function App() {
       return answers[index] === question.answerIndex ? score + 1 : score
     }, 0)
   }, [answers])
+  const quizPercent = Math.round((quizScore / quiz.length) * 100)
   const quizComplete = Object.keys(answers).length === quiz.length
 
   useEffect(() => {
@@ -213,6 +215,16 @@ function App() {
 
       return (current + 1) % useCases.length
     })
+  }
+
+  const openHeartPreview = () => {
+    setIsHeartPreviewOpen(true)
+    window.setTimeout(() => {
+      document.getElementById('heart-preview')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }, 0)
   }
 
   return (
@@ -438,11 +450,15 @@ function App() {
                     </div>
                     <div className="card-actions">
                       <a href="#workspace" className="text-action">
-                        Start
+                        Start module
                       </a>
-                      <a href="#use-cases" className="text-action secondary-text-action">
+                      <button
+                        type="button"
+                        className="text-action secondary-text-action"
+                        onClick={openHeartPreview}
+                      >
                         Preview AR
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </article>
@@ -556,13 +572,63 @@ function App() {
               </div>
 
               <div className="score-strip">
-                <strong>
-                  Score: {quizScore}/{quiz.length}
-                </strong>
-                <span>{quizComplete ? 'Ready to save progress' : 'Answer all questions'}</span>
+                <strong>Grade: {quizPercent}%</strong>
+                <span>
+                  {quizComplete
+                    ? `${quizScore}/${quiz.length} correct. Pass target: 70%.`
+                    : 'Answer all questions for your module grade.'}
+                </span>
               </div>
             </article>
           </div>
+
+          {isHeartPreviewOpen && (
+            <article className="panel heart-preview-panel" id="heart-preview">
+              <div className="panel-header compact">
+                <div>
+                  <p className="eyebrow">Preview AR</p>
+                  <h2>Human Heart Explorer 3D preview</h2>
+                </div>
+                <button
+                  type="button"
+                  className="close-preview"
+                  onClick={() => setIsHeartPreviewOpen(false)}
+                >
+                  Close preview
+                </button>
+              </div>
+
+              <div className="heart-preview-grid">
+                <div
+                  className="heart-model-stage"
+                  role="img"
+                  aria-label="A stylized 3D heart preview with labelled chambers and vessels"
+                >
+                  <div className="heart-model">
+                    <span className="heart-lobe left" />
+                    <span className="heart-lobe right" />
+                    <span className="heart-core" />
+                    <span className="vessel vessel-one" />
+                    <span className="vessel vessel-two" />
+                  </div>
+                  <span className="heart-label label-aorta">Aorta</span>
+                  <span className="heart-label label-ventricle">Left ventricle</span>
+                  <span className="heart-label label-valve">Valve pathway</span>
+                </div>
+
+                <div className="heart-facts">
+                  <h3>Simple facts for the starter lesson</h3>
+                  <ul>
+                    <li>The human heart is a muscular pump about the size of a fist.</li>
+                    <li>It has four chambers: two atria and two ventricles.</li>
+                    <li>The left ventricle pumps oxygen-rich blood to the body.</li>
+                    <li>Valves help keep blood moving in one direction.</li>
+                    <li>A typical resting adult heart rate is about 60 to 100 beats per minute.</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+          )}
         </section>
 
         <section className="bottom-grid">
