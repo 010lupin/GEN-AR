@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" role="img" aria-labelledby="title desc">
+  <title id="title">AR anatomy learning scene</title>
+  <desc id="desc">A student uses augmented reality to study a floating heart model with labels.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#eef2ff"/>
+      <stop offset="1" stop-color="#d1fae5"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="640" fill="url(#bg)"/>
+  <rect x="72" y="78" width="816" height="484" rx="28" fill="#fff" opacity=".78"/>
+  <circle cx="464" cy="306" r="92" fill="#ef4444" opacity=".88"/>
+  <path d="M451 210c-38 15-58 51-54 91 5 55 60 99 69 143 11-48 71-83 78-138 6-48-24-86-64-97-11-3-20-3-29 1z" fill="#b91c1c"/>
+  <path d="M446 265c26 11 59 39 65 93M496 247c-31 20-46 56-42 96" fill="none" stroke="#fecaca" stroke-width="10" stroke-linecap="round"/>
+  <g fill="none" stroke="#2563eb" stroke-width="4">
+    <path d="M554 264h138"/>
+    <path d="M394 318H244"/>
+    <path d="M521 400h172"/>
+  </g>
+  <g font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" fill="#1e1b4b">
+    <rect x="704" y="238" width="132" height="52" rx="14" fill="#fff"/>
+    <text x="724" y="271">Aorta</text>
+    <rect x="124" y="292" width="156" height="52" rx="14" fill="#fff"/>
+    <text x="145" y="325">Left ventricle</text>
+    <rect x="704" y="374" width="124" height="52" rx="14" fill="#fff"/>
+    <text x="724" y="407">Valve</text>
+  </g>
+  <g transform="translate(172 398)">
+    <circle cx="70" cy="58" r="46" fill="#312e81"/>
+    <rect x="23" y="96" width="96" height="128" rx="42" fill="#4f46e5"/>
+    <rect x="0" y="172" width="140" height="28" rx="14" fill="#1e1b4b" opacity=".18"/>
+    <rect x="42" y="42" width="56" height="18" rx="9" fill="#111827"/>
+  </g>
+  <rect x="326" y="512" width="312" height="34" rx="17" fill="#22c55e" opacity=".2"/>
+  <text x="354" y="535" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" fill="#166534">AI explains each labelled part</text>
+</svg>
