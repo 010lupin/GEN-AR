@@ -1,68 +1,135 @@
 # GenAR Learn
 
-GenAR Learn is an app based on generative AI and augmented reality. This web-first prototype turns the report findings into a practical app concept: short AR learning sessions, generative AI tutoring, accessibility controls, quiz feedback, and progress metrics.
+**GenAR Learn** is a web-based prototype that explores how **Generative AI** and **Augmented Reality** can make complex learning topics more interactive, accessible, and measurable.
 
-## Why This App
+The project was developed from a university research report titled **"Exploration of Integrating Generative AI in Augmented Reality: A Systematic Review."** The report found that AR is currently the most practical immersive technology for wider educational use because it is more accessible and lower cost than VR or holography, while generative AI can support personalised explanations, quizzes, and revision.
 
-The research found that AR is currently the most practical immersive technology for wide adoption because it is lower cost and more accessible than VR or holography. GenAR Learn uses that conclusion as the product direction, while using generative AI to personalize explanations, quizzes, and revision support.
+## Project Purpose
 
-## Installed Stack
+The purpose of GenAR Learn is to turn theoretical research findings into a usable learning application. Instead of remaining as a research-only project, the app demonstrates how students could interact with AR learning objects, receive AI-guided explanations, complete a lesson module, and take a quiz to measure understanding.
 
-- React + Vite + TypeScript
-- CSS Modules-style plain CSS for the first prototype
-- `@google/model-viewer` for browser-friendly 3D and AR-ready model display
-- `three` for future custom 3D/WebXR scenes
-- `lucide-react` for UI icons
-- `react-router-dom` for future multi-page routing
-- `openai` for future backend/API integration
+The current prototype focuses on a **Human Heart Explorer** module, where learners review simplified heart anatomy concepts before taking a randomized quiz.
 
-## Current Prototype
+## Key Features
 
-The current app includes:
+### [AR] AR Learning Preview
 
-- Learning dashboard
-- AR-ready 3D model preview
-- Lesson library cards
-- AI tutor panel mockup
-- Suggested tutor prompts
-- Progress metrics
-- Accessibility controls
-- Teacher lesson creation flow
+Interactive AR-style preview areas help learners visualise educational objects before or during a lesson. The current prototype includes a 3D-style Human Heart preview and AR use-case carousel.
 
-## Recommended Next Build Steps
+### [AI] AI Tutor Concept
 
-1. Add routing for dashboard, lessons, workspace, teacher tools, and accessibility settings.
-2. Replace the placeholder 3D model with subject-specific `.glb` assets.
-3. Add a backend API route for AI responses. Do not expose an API key in browser code.
-4. Add local lesson seed data and a simple progress store.
-5. Add quiz generation with structured AI responses.
-6. Add persistence with Supabase or another Postgres backend.
-7. Deploy the frontend and API to Vercel, Render, or a similar service.
+The interface includes an AI tutor panel designed for future integration with a backend AI service. It is intended to explain lesson content, simplify terminology, generate revision notes, and support follow-up questions.
 
-## Local Commands
+### [LESSON] Human Heart Module
 
-```bash
-npm install
-npm run dev
-npm run build
-npm run lint
+The Human Heart Explorer module introduces beginner-friendly facts about:
+
+- what the heart does
+- the four chambers
+- blood flow through the heart and lungs
+- valves and blood vessels
+- heartbeat rhythm
+
+### [QUIZ] Randomized Quiz
+
+After completing the lesson, users are asked:
+
+> Ready to take quiz?
+
+If the user selects **Yes**, the app starts a randomized multiple-choice quiz. If the user selects **No**, the lesson returns to the start. Quiz results are graded as a percentage out of **100%**.
+
+### [ACCESS] Accessibility Controls
+
+The prototype includes accessibility-focused settings such as reduced motion, captioned AI narration, high contrast controls, and session reminders. These features reflect the research findings around comfort, eye strain, and accessibility barriers in immersive learning.
+
+### [TEACHER] Teacher Workflow Concept
+
+The app includes a teacher tools section showing how future educators could upload learning notes, attach 3D assets, and generate quizzes or guided activities.
+
+### [UX] AR Use-Case Carousel
+
+The front page includes a carousel showing possible AR learning scenarios, including healthcare, engineering, and science education.
+
+## Technology Stack
+
+- **Frontend:** React, Vite, TypeScript
+- **Styling:** CSS
+- **3D / AR Preview:** `@google/model-viewer`, Three.js
+- **Icons:** Lucide React
+- **Routing Ready:** React Router
+- **AI Ready:** OpenAI package installed for future backend integration
+
+## Research Context
+
+This project is based on findings from a systematic review of Generative AI, AR, VR, and holography. The research identified that:
+
+- AR is more practical for widespread deployment than VR or holography.
+- VR can be effective but may cause discomfort, eye strain, or motion sickness.
+- Holography is promising but currently expensive and infrastructure-heavy.
+- Generative AI can improve learning through personalised explanations and automated content generation.
+- More practical prototypes are needed to test learning outcomes and user experience.
+
+GenAR Learn acts as a practical response to those research gaps.
+
+## Local Setup
+
+Install dependencies:
+
+```powershell
+npm.cmd install
 ```
 
-PowerShell may block `npm.ps1` on some Windows machines. Use `npm.cmd` instead:
+Start the development server:
 
 ```powershell
 npm.cmd run dev
+```
+
+Build for production:
+
+```powershell
 npm.cmd run build
 ```
 
-## AI Integration Note
+Run lint checks:
 
-Use the OpenAI package only from a backend route or server function. The browser should send lesson context, current step, user question, and accessibility preferences to the backend. The backend should call the model and return a constrained response.
+```powershell
+npm.cmd run lint
+```
 
-## Evaluation Metrics
+The local app usually runs at:
 
-- Learning effectiveness: quiz improvement, completion rate, confidence rating
-- Accessibility: keyboard completion success, contrast/readability checks, fallback usage
-- Engagement: lesson starts, completions, AI questions per lesson, AR interaction duration
-- AI quality: helpfulness rating, hallucination reports, response latency
-- Reliability: WebXR support rate, fallback success rate, API errors, page load time
+```text
+http://localhost:5173
+```
+
+## Current Status
+
+The prototype currently includes:
+
+- dashboard interface
+- AR use-case carousel
+- lesson library
+- Human Heart Explorer module
+- heart preview section
+- randomized quiz flow
+- grading out of 100%
+- accessibility controls
+- teacher workflow concept
+
+## Future Improvements
+
+- Add full routing for lesson pages.
+- Replace placeholder 3D visuals with medically accurate `.glb` heart models.
+- Add a backend API route for real AI tutor responses.
+- Store user progress with Supabase or another database.
+- Add teacher upload functionality.
+- Deploy publicly using Vercel or Render.
+
+## Collaborator
+
+This project was developed by **Isaac** with support from **Codex** as an AI coding collaborator.
+
+## Academic Use
+
+GenAR Learn is designed as a university project prototype. It demonstrates how research findings can be translated into a deployable educational application and can be used to support a report, presentation, portfolio, or future development work.
