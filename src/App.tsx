@@ -60,6 +60,8 @@ type QuizQuestion = {
   explanation: string
 }
 
+type ModuleStage = 'overview' | 'lesson' | 'quiz-ready' | 'quiz'
+
 const lessons: Lesson[] = [
   {
     title: 'Human Heart Explorer',
@@ -120,30 +122,35 @@ const useCases: UseCase[] = [
   },
 ]
 
-const lessonSteps: LessonStep[] = [
+const heartLessonSteps: LessonStep[] = [
   {
-    title: 'Orient the model',
-    body: 'Place the heart model on a desk or inspect it in 3D fallback mode. Start by noticing the major chambers and vessels.',
-    focus: 'Model placement, scale, and labels',
+    title: 'What the heart does',
+    body: 'The heart is a strong muscle that works like a pump. It keeps blood moving so oxygen and nutrients can reach the body, and waste products can be carried away.',
+    focus: 'Main role: pump blood around the body',
   },
   {
-    title: 'Identify chambers',
-    body: 'Compare the atria and ventricles. The ventricles pump blood out of the heart, while the atria receive blood returning to it.',
+    title: 'Four chambers',
+    body: 'The heart has four chambers. The two upper chambers are the atria, which receive blood. The two lower chambers are the ventricles, which pump blood out.',
     focus: 'Right atrium, left atrium, right ventricle, left ventricle',
   },
   {
-    title: 'Trace blood flow',
-    body: 'Follow blood from the body to the lungs, back to the heart, and then out to the body. This turns abstract diagrams into a spatial sequence.',
-    focus: 'Circulation pathway',
+    title: 'Blood flow pathway',
+    body: 'The right side of the heart sends oxygen-poor blood to the lungs. The left side receives oxygen-rich blood from the lungs and pumps it to the rest of the body.',
+    focus: 'Right side to lungs, left side to body',
   },
   {
-    title: 'Connect to practice',
-    body: 'Use a short clinical example to explain why valve direction, blocked arteries, and oxygen flow matter in healthcare education.',
-    focus: 'Applied healthcare context',
+    title: 'Valves and vessels',
+    body: 'Valves help blood move in one direction. Arteries carry blood away from the heart, while veins return blood back to the heart.',
+    focus: 'Valves, arteries, and veins',
+  },
+  {
+    title: 'Heartbeat and rhythm',
+    body: 'The heartbeat is controlled by electrical signals. A normal rhythm helps the chambers squeeze in the right order so blood keeps flowing efficiently.',
+    focus: 'Electrical signals coordinate pumping',
   },
 ]
 
-const quiz: QuizQuestion[] = [
+const quizBank: QuizQuestion[] = [
   {
     prompt: 'Which chamber pumps oxygen-rich blood to the body?',
     options: ['Right atrium', 'Left ventricle', 'Right ventricle'],
@@ -162,11 +169,47 @@ const quiz: QuizQuestion[] = [
     answerIndex: 1,
     explanation: 'AR helps learners inspect structures spatially while still using teacher and AI guidance.',
   },
+  {
+    prompt: 'What is the main job of the heart?',
+    options: ['To pump blood around the body', 'To store oxygen', 'To digest food'],
+    answerIndex: 0,
+    explanation: 'The heart is a muscle that pumps blood so oxygen and nutrients can move around the body.',
+  },
+  {
+    prompt: 'Which side of the heart sends blood to the lungs?',
+    options: ['Right side', 'Left side', 'Both sides at the same time'],
+    answerIndex: 0,
+    explanation: 'The right side sends oxygen-poor blood to the lungs to pick up oxygen.',
+  },
+  {
+    prompt: 'What do arteries usually do?',
+    options: ['Carry blood away from the heart', 'Return blood to the heart', 'Open and close like valves'],
+    answerIndex: 0,
+    explanation: 'Arteries carry blood away from the heart. Veins return blood back to the heart.',
+  },
+  {
+    prompt: 'What do the atria mainly do?',
+    options: ['Receive blood', 'Pump blood to the body', 'Control breathing'],
+    answerIndex: 0,
+    explanation: 'The atria are the upper chambers and mainly receive blood entering the heart.',
+  },
+  {
+    prompt: 'What helps the heart chambers squeeze in the correct rhythm?',
+    options: ['Electrical signals', 'Stomach acid', 'Bone marrow'],
+    answerIndex: 0,
+    explanation: 'Electrical signals coordinate the heartbeat so chambers contract in the right order.',
+  },
+  {
+    prompt: 'Which blood is sent from the left side of the heart to the body?',
+    options: ['Oxygen-rich blood', 'Oxygen-poor blood', 'Blood without nutrients'],
+    answerIndex: 0,
+    explanation: 'The left side pumps oxygen-rich blood from the lungs out to the body.',
+  },
 ]
 
 const metrics = [
-  { label: 'MVP lesson steps', value: '4', icon: ClipboardCheck },
-  { label: 'Quiz questions', value: '3', icon: Activity },
+  { label: 'MVP lesson steps', value: '5', icon: ClipboardCheck },
+  { label: 'Quiz bank', value: '10', icon: Activity },
   { label: 'AR use cases', value: '3', icon: Layers3 },
   { label: 'Comfort controls', value: '4', icon: Eye },
 ]
@@ -177,22 +220,40 @@ const tutorPrompts = [
   'Give me a healthcare example about valve problems.',
 ]
 
+function createQuizAttempt() {
+  const questions = [...quizBank]
+
+  for (let index = questions.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    ;[questions[index], questions[randomIndex]] = [
+      questions[randomIndex],
+      questions[index],
+    ]
+  }
+
+  return questions.slice(0, 5)
+}
+
 function App() {
   const [activeSlide, setActiveSlide] = useState(0)
   const [isCarouselPlaying, setIsCarouselPlaying] = useState(true)
   const [activeStep, setActiveStep] = useState(0)
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [isHeartPreviewOpen, setIsHeartPreviewOpen] = useState(false)
+  const [moduleStage, setModuleStage] = useState<ModuleStage>('overview')
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>(() =>
+    createQuizAttempt(),
+  )
 
   const selectedUseCase = useCases[activeSlide]
   const completedSteps = activeStep + 1
   const quizScore = useMemo(() => {
-    return quiz.reduce((score, question, index) => {
+    return quizQuestions.reduce((score, question, index) => {
       return answers[index] === question.answerIndex ? score + 1 : score
     }, 0)
-  }, [answers])
-  const quizPercent = Math.round((quizScore / quiz.length) * 100)
-  const quizComplete = Object.keys(answers).length === quiz.length
+  }, [answers, quizQuestions])
+  const quizPercent = Math.round((quizScore / quizQuestions.length) * 100)
+  const quizComplete = Object.keys(answers).length === quizQuestions.length
 
   useEffect(() => {
     if (!isCarouselPlaying) {
@@ -225,6 +286,44 @@ function App() {
         block: 'start',
       })
     }, 0)
+  }
+
+  const startHeartModule = () => {
+    setModuleStage('lesson')
+    setActiveStep(0)
+    setAnswers({})
+    window.setTimeout(() => {
+      document.getElementById('heart-module')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }, 0)
+  }
+
+  const moveLessonStep = (direction: 'previous' | 'next') => {
+    setActiveStep((current) => {
+      if (direction === 'previous') {
+        return Math.max(0, current - 1)
+      }
+
+      const nextStep = Math.min(heartLessonSteps.length - 1, current + 1)
+      if (current === heartLessonSteps.length - 1) {
+        setModuleStage('quiz-ready')
+      }
+      return nextStep
+    })
+  }
+
+  const startQuiz = () => {
+    setQuizQuestions(createQuizAttempt())
+    setAnswers({})
+    setModuleStage('quiz')
+  }
+
+  const restartLesson = () => {
+    setAnswers({})
+    setActiveStep(0)
+    setModuleStage('lesson')
   }
 
   return (
@@ -287,10 +386,14 @@ function App() {
               settings, and progress evidence for evaluation.
             </p>
             <div className="hero-actions">
-              <a href="#workspace" className="button-link primary">
+              <button
+                type="button"
+                className="button-link primary"
+                onClick={startHeartModule}
+              >
                 Start Human Heart lesson
                 <ChevronRight size={18} aria-hidden="true" />
-              </a>
+              </button>
               <a href="#use-cases" className="button-link secondary">
                 Explore AR use cases
               </a>
@@ -449,9 +552,13 @@ function App() {
                       <span>{lesson.asset}</span>
                     </div>
                     <div className="card-actions">
-                      <a href="#workspace" className="text-action">
+                      <button
+                        type="button"
+                        className="text-action"
+                        onClick={startHeartModule}
+                      >
                         Start module
-                      </a>
+                      </button>
                       <button
                         type="button"
                         className="text-action secondary-text-action"
@@ -499,86 +606,185 @@ function App() {
           </div>
         </section>
 
-        <section className="learning-flow" aria-labelledby="heart-workflow-title">
+        <section
+          className="learning-flow"
+          id="heart-module"
+          aria-labelledby="heart-workflow-title"
+        >
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Next MVP phase</p>
-              <h2 id="heart-workflow-title">Human Heart Explorer workflow</h2>
+              <p className="eyebrow">Human Heart Explorer</p>
+              <h2 id="heart-workflow-title">Interactive lesson module</h2>
             </div>
             <span className="progress-pill">
-              {completedSteps}/{lessonSteps.length} steps previewed
+              {completedSteps}/{heartLessonSteps.length} lesson steps
             </span>
           </div>
 
           <div className="flow-grid">
-            <article className="panel step-panel">
-              <div className="step-list" aria-label="Lesson steps">
-                {lessonSteps.map((step, index) => (
+            <article className="panel step-panel lesson-page-panel">
+              {moduleStage === 'overview' && (
+                <div className="module-overview">
+                  <p className="eyebrow">Lesson page</p>
+                  <h3>Learn the basics before the quiz</h3>
+                  <p>
+                    Click Start module to open a summarized heart lesson based on
+                    the HRI topic: what the heart does, its chambers, blood flow,
+                    valves, blood vessels, and rhythm.
+                  </p>
                   <button
                     type="button"
-                    key={step.title}
-                    className={index === activeStep ? 'active' : ''}
-                    onClick={() => setActiveStep(index)}
+                    className="button-link primary compact-link"
+                    onClick={startHeartModule}
                   >
-                    <span>{index + 1}</span>
-                    {step.title}
+                    Start module
+                    <ChevronRight size={18} aria-hidden="true" />
                   </button>
-                ))}
-              </div>
-              <div className="active-step">
-                <p className="eyebrow">Current step</p>
-                <h3>{lessonSteps[activeStep].title}</h3>
-                <p>{lessonSteps[activeStep].body}</p>
-                <div className="focus-box">
-                  <strong>Focus:</strong> {lessonSteps[activeStep].focus}
                 </div>
-              </div>
+              )}
+
+              {(moduleStage === 'lesson' || moduleStage === 'quiz-ready') && (
+                <>
+                  <div className="step-list" aria-label="Lesson steps">
+                    {heartLessonSteps.map((step, index) => (
+                      <button
+                        type="button"
+                        key={step.title}
+                        className={index === activeStep ? 'active' : ''}
+                        onClick={() => setActiveStep(index)}
+                      >
+                        <span>{index + 1}</span>
+                        {step.title}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="active-step">
+                    <p className="eyebrow">Lesson step</p>
+                    <h3>{heartLessonSteps[activeStep].title}</h3>
+                    <p>{heartLessonSteps[activeStep].body}</p>
+                    <div className="focus-box">
+                      <strong>Focus:</strong> {heartLessonSteps[activeStep].focus}
+                    </div>
+                    {moduleStage === 'lesson' && (
+                      <div className="module-controls">
+                        <button
+                          type="button"
+                          className="text-action secondary-text-action"
+                          onClick={() => moveLessonStep('previous')}
+                          disabled={activeStep === 0}
+                        >
+                          Previous
+                        </button>
+                        <button
+                          type="button"
+                          className="text-action"
+                          onClick={() => moveLessonStep('next')}
+                        >
+                          {activeStep === heartLessonSteps.length - 1
+                            ? 'Finish lesson'
+                            : 'Next step'}
+                        </button>
+                      </div>
+                    )}
+                    {moduleStage === 'quiz-ready' && (
+                      <div className="quiz-ready-box">
+                        <h3>Ready to take quiz?</h3>
+                        <p>
+                          Choose Yes to begin a randomized quiz. Choose No to
+                          return to the start of the lesson.
+                        </p>
+                        <div className="module-controls">
+                          <button
+                            type="button"
+                            className="text-action"
+                            onClick={startQuiz}
+                          >
+                            Yes, start quiz
+                          </button>
+                          <button
+                            type="button"
+                            className="text-action secondary-text-action"
+                            onClick={restartLesson}
+                          >
+                            No, return to start
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </article>
 
             <article className="panel quiz-panel">
               <div className="panel-header compact">
                 <div>
                   <p className="eyebrow">Assessment</p>
-                  <h2>Quick quiz</h2>
+                  <h2>Randomized quiz</h2>
                 </div>
                 {quizComplete && <CheckCircle2 size={24} aria-hidden="true" />}
               </div>
 
-              <div className="quiz-stack">
-                {quiz.map((question, questionIndex) => (
-                  <fieldset key={question.prompt}>
-                    <legend>{question.prompt}</legend>
-                    {question.options.map((option, optionIndex) => (
-                      <label key={option}>
-                        <input
-                          type="radio"
-                          name={`question-${questionIndex}`}
-                          checked={answers[questionIndex] === optionIndex}
-                          onChange={() =>
-                            setAnswers((current) => ({
-                              ...current,
-                              [questionIndex]: optionIndex,
-                            }))
-                          }
-                        />
-                        <span>{option}</span>
-                      </label>
-                    ))}
-                    {answers[questionIndex] !== undefined && (
-                      <p className="answer-feedback">{question.explanation}</p>
-                    )}
-                  </fieldset>
-                ))}
-              </div>
+              {moduleStage !== 'quiz' && (
+                <div className="quiz-locked">
+                  <BookOpen size={32} aria-hidden="true" />
+                  <h3>Complete the lesson first</h3>
+                  <p>
+                    The quiz unlocks after the final lesson step and the “Ready
+                    to take quiz?” confirmation.
+                  </p>
+                </div>
+              )}
 
-              <div className="score-strip">
-                <strong>Grade: {quizPercent}%</strong>
-                <span>
-                  {quizComplete
-                    ? `${quizScore}/${quiz.length} correct. Pass target: 70%.`
-                    : 'Answer all questions for your module grade.'}
-                </span>
-              </div>
+              {moduleStage === 'quiz' && (
+                <>
+                  <div className="quiz-stack">
+                    {quizQuestions.map((question, questionIndex) => (
+                      <fieldset key={question.prompt}>
+                        <legend>{question.prompt}</legend>
+                        {question.options.map((option, optionIndex) => (
+                          <label key={option}>
+                            <input
+                              type="radio"
+                              name={`question-${questionIndex}`}
+                              checked={answers[questionIndex] === optionIndex}
+                              onChange={() =>
+                                setAnswers((current) => ({
+                                  ...current,
+                                  [questionIndex]: optionIndex,
+                                }))
+                              }
+                            />
+                            <span>{option}</span>
+                          </label>
+                        ))}
+                        {answers[questionIndex] !== undefined && (
+                          <p className="answer-feedback">{question.explanation}</p>
+                        )}
+                      </fieldset>
+                    ))}
+                  </div>
+
+                  <div className="score-strip">
+                    <strong>Grade: {quizPercent}%</strong>
+                    <span>
+                      {quizComplete
+                        ? `${quizScore}/${quizQuestions.length} correct. Pass target: 70%.`
+                        : 'Answer all questions for your module grade.'}
+                    </span>
+                  </div>
+
+                  {quizComplete && (
+                    <button
+                      type="button"
+                      className="text-action secondary-text-action retry-quiz"
+                      onClick={startQuiz}
+                    >
+                      Try a new randomized quiz
+                    </button>
+                  )}
+                </>
+              )}
             </article>
           </div>
 
